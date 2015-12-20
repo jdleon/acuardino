@@ -15,7 +15,7 @@
 #define grnPin 10
 #define bluPin 9
 
-#define SensorPin A0              //pH meter Analog output to Arduino Analog Input 2
+#define SensorPin A0              //ping de sensor de pH
 #define SensorPin2 A1
 #define SensorPin3 A2
 
@@ -30,13 +30,10 @@
 #define ArrayLenth  30    //times of collection
 #define PING_INTERVAL 3000 // Milliseconds between pings.
 
-#define SONAR_NUM     1 // Number or sensors.
 #define MAX_DISTANCE 300 // Max distance in cm.
 
 
-NewPing sonar[SONAR_NUM] = { // Sensor object array.
-  NewPing(SonarTrig,SonarEcho, MAX_DISTANCE)
-  };
+NewPing sonar(SonarTrig,SonarEcho, MAX_DISTANCE);
 
 
 //CONFIGURACION CONDICIONES
@@ -55,7 +52,6 @@ double altura; //almacena el valor medio de altura de agua
 int sensorValue = 0;
 unsigned long pingTimer; // 
 unsigned long cm; // Almacena la distancia de agua
-uint8_t currentSensor = 1; // Which sensor is active.
 
 void setup(void)
 {
@@ -87,9 +83,9 @@ void loop(void)
     if (millis() >= pingTimer) {
       pingTimer += PING_INTERVAL * SONAR_NUM;
       oneSensorCycle(); // Do something with results.
-      sonar[0].timer_stop();
+      sonar.timer_stop();
       cm = 0;
-      sonar[0].ping_timer(echoCheck);
+      sonar.ping_timer(echoCheck);
         
 //calcular el promedio de las alturas obtenidas
       hArray[hArrayIndex++]=cm;
@@ -158,8 +154,8 @@ Serial.println();
 }
 
 void echoCheck() { // If ping echo, set distance to variable
-  if (sonar[0].check_timer())
-    cm = sonar[0].ping_result / US_ROUNDTRIP_CM;
+  if (sonar.check_timer())
+    cm = sonar.ping_result / US_ROUNDTRIP_CM;
 }
 
 void indicador(float value){
